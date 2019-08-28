@@ -27,6 +27,7 @@ namespace Sincronizador.Controller
 
                     if (config != null)
                     {
+
                         Ambiente.Interval = config.Ninterval;
                         Ambiente.MinAbiertas = config.NminAbiertas;
                         Ambiente.IniciarConWin = config.InicarConWindows;
