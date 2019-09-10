@@ -13,5 +13,6 @@ namespace Sincronizador.Models
         public string DsDescricao { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public bool LanzaHttprequest { get; set; }
     }
 }

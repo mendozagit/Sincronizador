@@ -17,6 +17,7 @@ namespace Sincronizador.Models
 
         public virtual DbSet<Abierta> Abierta { get; set; }
         public virtual DbSet<Alta> Alta { get; set; }
+        public virtual DbSet<Complemento> Complemento { get; set; }
         public virtual DbSet<Configuracion> Configuracion { get; set; }
         public virtual DbSet<Establecimiento> Establecimiento { get; set; }
         public virtual DbSet<HttpRequest> HttpRequest { get; set; }
@@ -123,6 +124,25 @@ namespace Sincronizador.Models
                     .HasMaxLength(50);
             });
 
+            modelBuilder.Entity<Complemento>(entity =>
+            {
+                entity.Property(e => e.CdPessoaFisica)
+                    .HasColumnName("CD_PESSOA_FISICA")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.DsEmail)
+                    .HasColumnName("DS_EMAIL")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.IeTipoComplemento)
+                    .HasColumnName("IE_TIPO_COMPLEMENTO")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.NrTelefone)
+                    .HasColumnName("NR_TELEFONE")
+                    .HasMaxLength(50);
+            });
+
             modelBuilder.Entity<Configuracion>(entity =>
             {
                 entity.Property(e => e.Ninterval).HasColumnName("NInterval");
@@ -169,10 +189,6 @@ namespace Sincronizador.Models
 
                 entity.Property(e => e.DtAlta)
                     .HasColumnName("DT_ALTA")
-                    .HasColumnType("datetime");
-
-                entity.Property(e => e.DtEntrada)
-                    .HasColumnName("DT_ENTRADA")
                     .HasColumnType("datetime");
 
                 entity.Property(e => e.HttpResponse)
@@ -323,6 +339,8 @@ namespace Sincronizador.Models
                 entity.Property(e => e.IeSituacao)
                     .HasColumnName("IE_SITUACAO")
                     .HasMaxLength(150);
+
+                entity.Property(e => e.LanzaHttprequest).HasColumnName("LanzaHTTPRequest");
 
                 entity.Property(e => e.NmUnidadeBasica)
                     .HasColumnName("NM_UNIDADE_BASICA")

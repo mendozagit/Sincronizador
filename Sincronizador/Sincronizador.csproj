@@ -135,6 +135,7 @@
     <Compile Include="Controller\AbiertaController.cs" />
     <Compile Include="Controller\AltaController.cs" />
     <Compile Include="Controller\Ambiente.cs" />
+    <Compile Include="Controller\ComplementoController.cs" />
     <Compile Include="Controller\ConfiguracionController.cs" />
     <Compile Include="Controller\EstablecimientoController.cs" />
     <Compile Include="Controller\Inicializador.cs" />
@@ -147,11 +148,13 @@
     <Compile Include="Controller\UnidadController.cs" />
     <Compile Include="Models\Abierta.cs" />
     <Compile Include="Models\Alta.cs" />
+    <Compile Include="Models\Complemento.cs" />
     <Compile Include="Models\Configuracion.cs" />
     <Compile Include="Models\Establecimiento.cs" />
     <Compile Include="Models\HttpRequest.cs" />
     <Compile Include="Models\Medico.cs" />
     <Compile Include="Models\Paciente.cs" />
+    <Compile Include="Models\Parametro.cs" />
     <Compile Include="Models\Query.cs" />
     <Compile Include="Models\Sector.cs" />
     <Compile Include="Models\SyncContext.cs" />

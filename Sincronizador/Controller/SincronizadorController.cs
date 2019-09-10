@@ -31,6 +31,7 @@ namespace Sincronizador.Controller
         private static QueryController queryController;
         private static SectorController sectorController;
         private static UnidadController unidadController;
+        private static ComplementoController complementoController;
 
         //Listas
         private static List<Abierta> abiertas;
@@ -58,7 +59,7 @@ namespace Sincronizador.Controller
             queryController = new QueryController();
             sectorController = new SectorController();
             unidadController = new UnidadController();
-
+            complementoController = new ComplementoController();
 
             //Listas
             abiertas = new List<Abierta>();
@@ -385,6 +386,8 @@ namespace Sincronizador.Controller
                 }
                 SincronizaMedico(altasRemotas);
                 SincronizaPaciente(altasRemotas);
+                SincronizarComplementoMedico(altasRemotas);
+                SincronizarComplementoPaciente(altasRemotas);
                 LanzarHttpRequest(altasRemotas);
                 q.UltSincronizacion = DateTime.Now;
                 queryController.Update(q);
@@ -394,6 +397,106 @@ namespace Sincronizador.Controller
                 WriteStatus("TODO ESTÁ SINCRONIZADO " + DateTime.Now.ToString("HH:mm:ss"));
         }
 
+        private static void SincronizarComplementoMedico(DataTable altasRemotas)
+        {
+            using (var db = new SyncContext())
+            {
+                i = 0;
+                foreach (DataRow row in altasRemotas.Rows)
+                {
+                    var cmr = Ambiente.Oracledb.Select("select CD_PESSOA_FISICA, IE_TIPO_COMPLEMENTO, NR_TELEFONE, DS_EMAIL from COMPL_PESSOA_FISICA where IE_TIPO_COMPLEMENTO =1 and CD_PESSOA_FISICA=" + row["CD_MEDICO"].ToString());
+                    if (cmr != null)
+                    {
+                        if (cmr.Rows.Count > 0)
+                        {
+                            DataRow cmedicoRemoto = cmr.Rows[0];
+
+                            var cml = db.Complemento.FirstOrDefault(x => x.CdPessoaFisica.Equals(cmedicoRemoto["CD_PESSOA_FISICA"].ToString()));
+                            if (cml == null)
+                            {
+                                //insertar
+                                cml = new Complemento();
+                                cml.CdPessoaFisica = cmedicoRemoto["CD_PESSOA_FISICA"].ToString();
+                                cml.IeTipoComplemento = cmedicoRemoto["IE_TIPO_COMPLEMENTO"].ToString();
+                                cml.NrTelefone = cmedicoRemoto["NR_TELEFONE"].ToString();
+                                cml.DsEmail = cmedicoRemoto["DS_EMAIL"].ToString();
+                                if (complementoController.InsertOne(cml))
+                                {
+                                    WriteStatus("COMPLEMENTO MEDICO", i, altasRemotas.Rows.Count - 1);
+                                    i++;
+                                }
+                            }
+                            else
+                            {
+                                //actulizar
+                                cml = new Complemento();
+                                cml.CdPessoaFisica = cmedicoRemoto["CD_PESSOA_FISICA"].ToString();
+                                cml.IeTipoComplemento = cmedicoRemoto["IE_TIPO_COMPLEMENTO"].ToString();
+                                cml.NrTelefone = cmedicoRemoto["NR_TELEFONE"].ToString();
+                                cml.DsEmail = cmedicoRemoto["DS_EMAIL"].ToString();
+                                if (complementoController.Update(cml))
+                                {
+                                    WriteStatus("COMPLEMENTO MEDICO", i, altasRemotas.Rows.Count - 1);
+                                    i++;
+                                }
+                            }
+
+
+                        }
+                    }
+                }
+            }
+        }
+        private static void SincronizarComplementoPaciente(DataTable altasRemotas)
+        {
+            using (var db = new SyncContext())
+            {
+                i = 0;
+                foreach (DataRow row in altasRemotas.Rows)
+                {
+                    var cpr = Ambiente.Oracledb.Select("select CD_PESSOA_FISICA, IE_TIPO_COMPLEMENTO, NR_TELEFONE, DS_EMAIL from COMPL_PESSOA_FISICA where IE_TIPO_COMPLEMENTO =1 and CD_PESSOA_FISICA=" + row["CD_PACIENTE"].ToString());
+                    if (cpr != null)
+                    {
+                        if (cpr.Rows.Count > 0)
+                        {
+                            DataRow cpacienteRemoto = cpr.Rows[0];
+
+                            var cml = db.Complemento.FirstOrDefault(x => x.CdPessoaFisica.Equals(cpacienteRemoto["CD_PESSOA_FISICA"].ToString()));
+                            if (cml == null)
+                            {
+                                //insertar
+                                cml = new Complemento();
+                                cml.CdPessoaFisica = cpacienteRemoto["CD_PESSOA_FISICA"].ToString();
+                                cml.IeTipoComplemento = cpacienteRemoto["IE_TIPO_COMPLEMENTO"].ToString();
+                                cml.NrTelefone = cpacienteRemoto["NR_TELEFONE"].ToString();
+                                cml.DsEmail = cpacienteRemoto["DS_EMAIL"].ToString();
+                                if (complementoController.InsertOne(cml))
+                                {
+                                    WriteStatus("COMPLEMENTO PACIENTE", i, altasRemotas.Rows.Count - 1);
+                                    i++;
+                                }
+                            }
+                            else
+                            {
+                                //actulizar
+                                cml = new Complemento();
+                                cml.CdPessoaFisica = cpacienteRemoto["CD_PESSOA_FISICA"].ToString();
+                                cml.IeTipoComplemento = cpacienteRemoto["IE_TIPO_COMPLEMENTO"].ToString();
+                                cml.NrTelefone = cpacienteRemoto["NR_TELEFONE"].ToString();
+                                cml.DsEmail = cpacienteRemoto["DS_EMAIL"].ToString();
+                                if (complementoController.Update(cml))
+                                {
+                                    WriteStatus("COMPLEMENTO PACIENTE", i, altasRemotas.Rows.Count - 1);
+                                    i++;
+                                }
+                            }
+
+
+                        }
+                    }
+                }
+            }
+        }
         private static void LanzarHttpRequest(DataTable altasRemotas)
         {
             if (altasRemotas.Rows.Count > 0)
@@ -416,21 +519,23 @@ namespace Sincronizador.Controller
 
         private static string GeneraParametros(DataRow a)
         {
-            s = "";
+            Parametro parametros = new Parametro();
             Establecimiento establecimiento;
             Paciente paciente;
             Medico medico;
-            string atendimiento;
+
 
             using (var db = new SyncContext())
             {
                 establecimiento = db.Establecimiento.FirstOrDefault(x => x.CdEstabelecimento.Equals(a["CD_ESTABELECIMENTO"].ToString()));
                 medico = db.Medico.FirstOrDefault(x => x.CdPessoaFisica.Equals(a["CD_MEDICO"].ToString()));
                 paciente = db.Paciente.FirstOrDefault(x => x.CdPessoaFisica.Equals(a["CD_PACIENTE"].ToString()));
-                atendimiento = a["NR_ATENDIMENTO"].ToString();
-
             }
-
+            parametros.EmpresaId = 1; //Deberia ser dinamico
+            parametros.SucursalId = establecimiento.CdInterno.Trim().Length == 0 ? 1 : int.Parse(establecimiento.CdInterno.Trim());
+            parametros.NoAtencion = a["NR_ATENDIMENTO"].ToString();
+            parametros.NombreMedico = medico.NmPessoaFisica;
+            // parametros.CorreoMedico = medico.
             //alta.NrAtendimento = a["NR_ATENDIMENTO"].ToString();
             //alta.CdPaciente = a["CD_PACIENTE"].ToString();
             //alta.CdMedico = a["CD_MEDICO"].ToString();

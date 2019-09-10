@@ -7,7 +7,6 @@ namespace Sincronizador.Models
     {
         public int HttpRequestId { get; set; }
         public string NrAtendimento { get; set; }
-        public DateTime? DtEntrada { get; set; }
         public DateTime? DtAlta { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string Parametros { get; set; }
