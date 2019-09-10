@@ -401,7 +401,6 @@ namespace Sincronizador.Controller
                 i = 0;
                 foreach (DataRow a in altasRemotas.Rows)
                 {
-
                     var param = GeneraParametros(a);
 
                     //if (altaController.InsertOne(alta))
