@@ -149,6 +149,7 @@
     <Compile Include="Models\Alta.cs" />
     <Compile Include="Models\Configuracion.cs" />
     <Compile Include="Models\Establecimiento.cs" />
+    <Compile Include="Models\HttpRequest.cs" />
     <Compile Include="Models\Medico.cs" />
     <Compile Include="Models\Paciente.cs" />
     <Compile Include="Models\Query.cs" />

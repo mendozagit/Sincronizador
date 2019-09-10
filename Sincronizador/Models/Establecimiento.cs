@@ -7,6 +7,7 @@ namespace Sincronizador.Models
     {
         public int EstablecimientoId { get; set; }
         public string CdEstabelecimento { get; set; }
+        public string CdInterno { get; set; }
         public string NmFantasiaEstab { get; set; }
         public string NmSiglaEstab { get; set; }
         public string IeTipoCtbEstab { get; set; }

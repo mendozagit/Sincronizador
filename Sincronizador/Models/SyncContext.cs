@@ -19,6 +19,7 @@ namespace Sincronizador.Models
         public virtual DbSet<Alta> Alta { get; set; }
         public virtual DbSet<Configuracion> Configuracion { get; set; }
         public virtual DbSet<Establecimiento> Establecimiento { get; set; }
+        public virtual DbSet<HttpRequest> HttpRequest { get; set; }
         public virtual DbSet<Medico> Medico { get; set; }
         public virtual DbSet<Paciente> Paciente { get; set; }
         public virtual DbSet<Query> Query { get; set; }
@@ -28,7 +29,8 @@ namespace Sincronizador.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-            { 
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=Sync;Trusted_Connection=True;");
             }
         }
@@ -136,6 +138,10 @@ namespace Sincronizador.Models
                     .HasColumnName("CD_ESTABELECIMENTO")
                     .HasMaxLength(150);
 
+                entity.Property(e => e.CdInterno)
+                    .HasColumnName("CD_Interno")
+                    .HasMaxLength(150);
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.IeAreaEstab)
@@ -155,6 +161,27 @@ namespace Sincronizador.Models
                     .HasMaxLength(150);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<HttpRequest>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DtAlta)
+                    .HasColumnName("DT_ALTA")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.DtEntrada)
+                    .HasColumnName("DT_ENTRADA")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.HttpResponse)
+                    .HasColumnName("httpResponse")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.NrAtendimento)
+                    .HasColumnName("NR_ATENDIMENTO")
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Medico>(entity =>

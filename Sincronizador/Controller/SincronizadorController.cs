@@ -142,12 +142,10 @@ namespace Sincronizador.Controller
             }
             ocupado = false;
         }
-
         private static void StatusCatalogos()
         {
 
         }
-
         private static void UpdateCat()
         {
 
@@ -208,6 +206,7 @@ namespace Sincronizador.Controller
                 o.NmSiglaEstab = row["NM_SIGLA_ESTAB"].ToString();
                 o.IeTipoCtbEstab = row["IE_TIPO_CTB_ESTAB"].ToString();
                 o.IeAreaEstab = row["IE_AREA_ESTAB"].ToString();
+                o.CdInterno = row["CD_INTERNO"].ToString();
                 o.CreatedAt = DateTime.Now;
                 o.UpdatedAt = null;
                 if (!establecimientoController.InsertOne(o))
@@ -382,9 +381,11 @@ namespace Sincronizador.Controller
                         WriteStatus("ALTAS", i, altasRemotas.Rows.Count - 1);
                         i++;
                     }
+
                 }
                 SincronizaMedico(altasRemotas);
                 SincronizaPaciente(altasRemotas);
+                LanzarHttpRequest(altasRemotas);
                 q.UltSincronizacion = DateTime.Now;
                 queryController.Update(q);
 
@@ -392,6 +393,59 @@ namespace Sincronizador.Controller
             else
                 WriteStatus("TODO ESTÁ SINCRONIZADO " + DateTime.Now.ToString("HH:mm:ss"));
         }
+
+        private static void LanzarHttpRequest(DataTable altasRemotas)
+        {
+            if (altasRemotas.Rows.Count > 0)
+            {
+                i = 0;
+                foreach (DataRow a in altasRemotas.Rows)
+                {
+
+                    var param = GeneraParametros(a);
+
+                    //if (altaController.InsertOne(alta))
+                    //{
+                    //    WriteStatus("ALTAS", i, altasRemotas.Rows.Count - 1);
+                    //    i++;
+                    //}
+                }
+            }
+            else
+                WriteStatus("TODO ESTÁ SINCRONIZADO " + DateTime.Now.ToString("HH:mm:ss"));
+        }
+
+        private static string GeneraParametros(DataRow a)
+        {
+            s = "";
+            Establecimiento establecimiento;
+            Paciente paciente;
+            Medico medico;
+            string atendimiento;
+
+            using (var db = new SyncContext())
+            {
+                establecimiento = db.Establecimiento.FirstOrDefault(x => x.CdEstabelecimento.Equals(a["CD_ESTABELECIMENTO"].ToString()));
+                medico = db.Medico.FirstOrDefault(x => x.CdPessoaFisica.Equals(a["CD_MEDICO"].ToString()));
+                paciente = db.Paciente.FirstOrDefault(x => x.CdPessoaFisica.Equals(a["CD_PACIENTE"].ToString()));
+                atendimiento = a["NR_ATENDIMENTO"].ToString();
+
+            }
+
+            //alta.NrAtendimento = a["NR_ATENDIMENTO"].ToString();
+            //alta.CdPaciente = a["CD_PACIENTE"].ToString();
+            //alta.CdMedico = a["CD_MEDICO"].ToString();
+            //alta.CdEstabelecimento = a["CD_ESTABELECIMENTO"].ToString();
+            //alta.DtEntrada = DateTime.Parse(a["DT_ENTRADA"].ToString());
+            //alta.DtAlta = DateTime.Parse(a["DT_ALTA"].ToString());
+            //alta.DtActualizacion = DateTime.Parse(a["DT_ACTUALIZACION"].ToString());
+            //alta.CdUnidadeBasica = a["CD_UNIDADE_BASICA"].ToString();
+            //alta.CdSetorAtendimento = a["CD_SETOR_ATENDIMENTO"].ToString();
+
+
+            return "";
+        }
+
         private static void SincronizaPaciente(DataTable altasRemotas)
         {
             using (var db = new SyncContext())

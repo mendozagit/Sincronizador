@@ -20,14 +20,13 @@ namespace Sincronizador.Controller
                 try
                 {
                     if (db.Database.EnsureCreated())
-                        Ambiente.Message("No se encotró la base de datos, pero se creó una");
-                    
+                        Ambiente.Message("La base de datos se creó exitosamente");
+
 
                     var config = db.Configuracion.FirstOrDefault();
 
                     if (config != null)
                     {
-
                         Ambiente.Interval = config.Ninterval;
                         Ambiente.MinAbiertas = config.NminAbiertas;
                         Ambiente.IniciarConWin = config.InicarConWindows;
