@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Windows.Forms;
 
 namespace Sincronizador.Controller
@@ -32,6 +35,7 @@ namespace Sincronizador.Controller
         private static SectorController sectorController;
         private static UnidadController unidadController;
         private static ComplementoController complementoController;
+        private static RequestController requestController;
 
         //Listas
         private static List<Abierta> abiertas;
@@ -41,6 +45,8 @@ namespace Sincronizador.Controller
             //Configuracion del subproceso (hilo)
             worker = new BackgroundWorker();
             worker.DoWork += new DoWorkEventHandler(Worker_DoWork);
+
+
 
 
             //Configuracion del timer
@@ -60,6 +66,7 @@ namespace Sincronizador.Controller
             sectorController = new SectorController();
             unidadController = new UnidadController();
             complementoController = new ComplementoController();
+            requestController = new RequestController();
 
             //Listas
             abiertas = new List<Abierta>();
@@ -382,13 +389,12 @@ namespace Sincronizador.Controller
                         WriteStatus("ALTAS", i, altasRemotas.Rows.Count - 1);
                         i++;
                     }
-
                 }
                 SincronizaMedico(altasRemotas);
                 SincronizaPaciente(altasRemotas);
                 SincronizarComplementoMedico(altasRemotas);
                 SincronizarComplementoPaciente(altasRemotas);
-                LanzarHttpRequest(altasRemotas);
+                PreparaHttpRequest(altasRemotas);
                 q.UltSincronizacion = DateTime.Now;
                 queryController.Update(q);
 
@@ -429,7 +435,7 @@ namespace Sincronizador.Controller
                             else
                             {
                                 //actulizar
-                                cml = new Complemento();
+
                                 cml.CdPessoaFisica = cmedicoRemoto["CD_PESSOA_FISICA"].ToString();
                                 cml.IeTipoComplemento = cmedicoRemoto["IE_TIPO_COMPLEMENTO"].ToString();
                                 cml.NrTelefone = cmedicoRemoto["NR_TELEFONE"].ToString();
@@ -479,7 +485,7 @@ namespace Sincronizador.Controller
                             else
                             {
                                 //actulizar
-                                cml = new Complemento();
+
                                 cml.CdPessoaFisica = cpacienteRemoto["CD_PESSOA_FISICA"].ToString();
                                 cml.IeTipoComplemento = cpacienteRemoto["IE_TIPO_COMPLEMENTO"].ToString();
                                 cml.NrTelefone = cpacienteRemoto["NR_TELEFONE"].ToString();
@@ -497,7 +503,7 @@ namespace Sincronizador.Controller
                 }
             }
         }
-        private static void LanzarHttpRequest(DataTable altasRemotas)
+        private static void PreparaHttpRequest(DataTable altasRemotas)
         {
             if (altasRemotas.Rows.Count > 0)
             {
@@ -506,48 +512,159 @@ namespace Sincronizador.Controller
                 {
                     var param = GeneraParametros(a);
 
-                    //if (altaController.InsertOne(alta))
-                    //{
-                    //    WriteStatus("ALTAS", i, altasRemotas.Rows.Count - 1);
-                    //    i++;
-                    //}
+                    if (param.Trim().Length > 0)
+                    {
+                        var request = new HttpRequest();
+
+                        request.NrAtendimento = a["NR_ATENDIMENTO"].ToString();
+                        request.DtAlta = DateTime.Parse(a["DT_ALTA"].ToString());
+                        request.Parametros = param;
+                        request.Enviado = false;
+                        request.Fenvio = null;
+                        request.SuccessfulRequest = false;
+                        request.HttpResponse = null;
+                        request.CreatedAt = DateTime.Now;
+                        if (requestController.InsertOne(request))
+                        {
+                            WriteStatus("PREPARANDO PETICIONES HTTP", i, altasRemotas.Rows.Count - 1);
+                            i++;
+                        }
+                    }
                 }
             }
             else
                 WriteStatus("TODO ESTÁ SINCRONIZADO " + DateTime.Now.ToString("HH:mm:ss"));
         }
+        public static void LanzaPeticiones()
+        {
+            var requests = requestController.SelectAllPendientes();
+            foreach (var r in requests)
+                LanzaHttpRequest(r);
+        }
 
+        private static void LanzaHttpRequest(HttpRequest request)
+        {
+            string respuestahtml;
+            string[] respuestaDesglosada;
+            try
+            {
+                CookieContainer tempcookies = new CookieContainer();
+                UTF8Encoding encoding = new UTF8Encoding();
+
+                request.Parametros = "1|596|JUAN ALEJANDRO FLORES VILADROZA|mendoza.git@gmail.com|NULL|Edson Roberto Hernandez Crisanto|mendoza.git@gmail.com|4611478175|2019-09-10|0";
+                var byt = Encoding.UTF8.GetBytes(request.Parametros);
+                
+
+                var ParametrosBase64 = Convert.ToBase64String(byt);
+
+                string strURLCompleto = @"https://hospitalesmac.com/encuestas/ws/encuestaPM.php";
+                strURLCompleto += "?param=" + ParametrosBase64;
+
+                HttpWebRequest postreq = (HttpWebRequest)WebRequest.Create(strURLCompleto);
+
+
+
+
+                postreq.Method = "GET";
+                postreq.KeepAlive = true;
+                postreq.CookieContainer = tempcookies;
+                postreq.UserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36";
+                postreq.ContentType = "text/html; charset=utf-8";
+                postreq.Referer = strURLCompleto;
+                ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
+
+                HttpWebResponse postresponse;
+                postresponse = (HttpWebResponse)postreq.GetResponse();
+
+                StreamReader postreqreader = new StreamReader(postresponse.GetResponseStream());
+                string thepage = postreqreader.ReadToEnd();
+                HttpWebResponse respuesta = postresponse;
+                respuestahtml = thepage;
+               // respuestaDesglosada = new[] { "1" };
+            }
+            catch (Exception ex)
+            {
+                respuestahtml = ex.Message;
+                respuestaDesglosada = new[] { "-1" };
+            }
+        }
         private static string GeneraParametros(DataRow a)
         {
+
             Parametro parametros = new Parametro();
             Establecimiento establecimiento;
+            Sector sector;
             Paciente paciente;
             Medico medico;
-
+            Complemento complementop;
+            Complemento complementom;
 
             using (var db = new SyncContext())
             {
                 establecimiento = db.Establecimiento.FirstOrDefault(x => x.CdEstabelecimento.Equals(a["CD_ESTABELECIMENTO"].ToString()));
                 medico = db.Medico.FirstOrDefault(x => x.CdPessoaFisica.Equals(a["CD_MEDICO"].ToString()));
                 paciente = db.Paciente.FirstOrDefault(x => x.CdPessoaFisica.Equals(a["CD_PACIENTE"].ToString()));
+                complementop = db.Complemento.FirstOrDefault(x => x.CdPessoaFisica.Equals(a["CD_PACIENTE"].ToString()));
+                complementom = db.Complemento.FirstOrDefault(x => x.CdPessoaFisica.Equals(a["CD_MEDICO"].ToString()));
+                sector = db.Sector.FirstOrDefault(x => x.CdSetorAtendimento.Equals(a["CD_SETOR_ATENDIMENTO"].ToString()));
             }
-            parametros.EmpresaId = 1; //Deberia ser dinamico
-            parametros.SucursalId = establecimiento.CdInterno.Trim().Length == 0 ? 1 : int.Parse(establecimiento.CdInterno.Trim());
-            parametros.NoAtencion = a["NR_ATENDIMENTO"].ToString();
-            parametros.NombreMedico = medico.NmPessoaFisica;
-            // parametros.CorreoMedico = medico.
-            //alta.NrAtendimento = a["NR_ATENDIMENTO"].ToString();
-            //alta.CdPaciente = a["CD_PACIENTE"].ToString();
-            //alta.CdMedico = a["CD_MEDICO"].ToString();
-            //alta.CdEstabelecimento = a["CD_ESTABELECIMENTO"].ToString();
-            //alta.DtEntrada = DateTime.Parse(a["DT_ENTRADA"].ToString());
-            //alta.DtAlta = DateTime.Parse(a["DT_ALTA"].ToString());
-            //alta.DtActualizacion = DateTime.Parse(a["DT_ACTUALIZACION"].ToString());
-            //alta.CdUnidadeBasica = a["CD_UNIDADE_BASICA"].ToString();
-            //alta.CdSetorAtendimento = a["CD_SETOR_ATENDIMENTO"].ToString();
+            if (sector == null)
+            {
+                WriteStatus("HTTPREQUEST MAL FORMADA: " + DateTime.Now.ToString("hh:mm:ss"));
+                return "";
+            }
 
 
-            return "";
+            if (sector.LanzaHttprequest)
+            {
+                parametros.EmpresaId = 1; //Deberia ser dinamico
+                if (establecimiento == null)
+                    parametros.SucursalId = "NULL";
+                else
+                    parametros.SucursalId = establecimiento.CdInterno.Trim().Trim().Length == 0 ? "DESCONOCIDO" : establecimiento.CdInterno.Trim();
+                parametros.NoAtencion = a["NR_ATENDIMENTO"].ToString().Trim().Length == 0 ? "DESCONOCIDO" : a["NR_ATENDIMENTO"].ToString();
+
+                if (medico == null)
+                    parametros.NombreMedico = "NULL";
+                else
+                    parametros.NombreMedico = medico.NmPessoaFisica.Trim().Length == 0 ? "DESCONOCIDO" : medico.NmPessoaFisica.Trim();
+
+                if (complementom == null)
+                    parametros.CorreoMedico = "NULL";
+                else
+                    //  parametros.CorreoMedico = complementom.DsEmail.Trim().Length == 0 ? "encuestas@hospitalesmac.com" : complementom.DsEmail.Trim();
+                    parametros.CorreoMedico = complementom.DsEmail.Trim().Length == 0 ? "mendoza.git@gmail.com" : complementom.DsEmail.Trim();
+
+
+                if (complementom == null)
+                    parametros.TelefonoMedico = "NULL";
+                else
+                    parametros.TelefonoMedico = complementom.NrTelefone.Trim().Length == 0 ? "DESCONOCIDO" : complementom.NrTelefone.Trim();
+
+                if (paciente == null)
+                    parametros.NombrePaciente = "NULL";
+                else
+                    parametros.NombrePaciente = paciente.NmPessoaFisica.Trim().Length == 0 ? "DESCONOCIDO" : paciente.NmPessoaFisica.Trim();
+
+                if (complementop == null)
+                    parametros.CorreoPaciente = "NULL";
+                else
+                    parametros.CorreoPaciente = complementop.DsEmail.Trim().Length == 0 ? "mendoza.git@gmail.com" : complementop.DsEmail.Trim();
+
+                if (complementop == null)
+                    parametros.TelefonoPaciente = "null";
+                else
+                    parametros.TelefonoPaciente = complementop.NrTelefone.Trim().Length == 0 ? "" : complementop.NrTelefone.Trim();
+
+                if (DateTime.TryParse(a["DT_ALTA"].ToString(), out DateTime datealta))
+                    parametros.FechaAlta = datealta;
+                else
+                    parametros.FechaAlta = DateTime.Now;
+                parametros.Urgencias = sector.Urgencias == true ? 1 : 0;
+
+                return parametros.Serializar();
+            }
+            else return "";
         }
 
         private static void SincronizaPaciente(DataTable altasRemotas)
@@ -558,7 +675,7 @@ namespace Sincronizador.Controller
                 i = 0;
                 foreach (DataRow row in altasRemotas.Rows)
                 {
-                    var pr = Ambiente.Oracledb.Select("SELECT * from pessoa_fisica where CD_PESSOA_FISICA=" + row["CD_PACIENTE"].ToString());
+                    var pr = Ambiente.Oracledb.Select("SELECT CD_PESSOA_FISICA,NM_PESSOA_FISICA,NM_USUARIO,DT_NASCIMENTO,IE_SEXO,NM_ABREVIADO,CD_CURP,CD_RFC,NM_PRIMEIRO_NOME,NM_SOBRENOME_PAI,NM_SOBRENOME_MAE from pessoa_fisica where CD_PESSOA_FISICA=" + row["CD_PACIENTE"].ToString());
                     if (pr != null)
                     {
                         if (pr.Rows.Count > 0)
@@ -642,7 +759,7 @@ namespace Sincronizador.Controller
                 i = 0;
                 foreach (DataRow row in altasRemotas.Rows)
                 {
-                    var mr = Ambiente.Oracledb.Select("SELECT * from pessoa_fisica where CD_PESSOA_FISICA=" + row["CD_MEDICO"].ToString());
+                    var mr = Ambiente.Oracledb.Select("SELECT CD_PESSOA_FISICA,NM_PESSOA_FISICA,NM_USUARIO,DT_NASCIMENTO,IE_SEXO,NM_ABREVIADO,CD_CURP,CD_RFC,NM_PRIMEIRO_NOME,NM_SOBRENOME_PAI,NM_SOBRENOME_MAE from pessoa_fisica where CD_PESSOA_FISICA=" + row["CD_MEDICO"].ToString());
                     if (mr != null)
                     {
                         if (mr.Rows.Count > 0)

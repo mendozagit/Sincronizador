@@ -143,6 +143,7 @@
     <Compile Include="Controller\OracleContext.cs" />
     <Compile Include="Controller\PacienteController.cs" />
     <Compile Include="Controller\QueryController.cs" />
+    <Compile Include="Controller\RequestController.cs" />
     <Compile Include="Controller\SectorController.cs" />
     <Compile Include="Controller\SincronizadorController.cs" />
     <Compile Include="Controller\UnidadController.cs" />

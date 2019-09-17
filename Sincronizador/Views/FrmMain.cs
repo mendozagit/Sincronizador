@@ -58,5 +58,10 @@ namespace Sincronizador.Views
                 Application.Restart();
             }
         }
+
+        private void BtnLanzar_Click(object sender, EventArgs e)
+        {
+            SincronizadorController.LanzaPeticiones();
+        }
     }
 }

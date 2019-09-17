@@ -9,7 +9,7 @@ namespace Sincronizador.Models
     public class Parametro
     {
         public int EmpresaId { get; set; }
-        public int SucursalId { get; set; }
+        public string SucursalId { get; set; }
         public string NoAtencion { get; set; }
         public string NombreMedico { get; set; }
 
@@ -22,7 +22,7 @@ namespace Sincronizador.Models
         public string TelefonoMedico { get; set; }
         public DateTime FechaAlta { get; set; }
 
-        public bool Urgencias { get; set; }
+        public int Urgencias { get; set; }
 
         public string Serializar()
         {

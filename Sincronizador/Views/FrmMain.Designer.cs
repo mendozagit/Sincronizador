@@ -30,6 +30,10 @@
         {
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.inicioToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.BtnIniciar = new System.Windows.Forms.ToolStripMenuItem();
+            this.BtnDetener = new System.Windows.Forms.ToolStripMenuItem();
+            this.BtnReset = new System.Windows.Forms.ToolStripMenuItem();
+            this.BtnSalir = new System.Windows.Forms.ToolStripMenuItem();
             this.configuracionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mantenimientoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BtnMtoQuerys = new System.Windows.Forms.ToolStripMenuItem();
@@ -40,10 +44,7 @@
             this.LblStatusBar = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.LblStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.BtnIniciar = new System.Windows.Forms.ToolStripMenuItem();
-            this.BtnDetener = new System.Windows.Forms.ToolStripMenuItem();
-            this.BtnReset = new System.Windows.Forms.ToolStripMenuItem();
-            this.BtnSalir = new System.Windows.Forms.ToolStripMenuItem();
+            this.BtnLanzar = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.LblStatusBar.SuspendLayout();
             this.SuspendLayout();
@@ -72,6 +73,34 @@
             this.inicioToolStripMenuItem.Size = new System.Drawing.Size(73, 32);
             this.inicioToolStripMenuItem.Text = "Inicio";
             // 
+            // BtnIniciar
+            // 
+            this.BtnIniciar.Name = "BtnIniciar";
+            this.BtnIniciar.Size = new System.Drawing.Size(171, 32);
+            this.BtnIniciar.Text = "&Iniciar";
+            this.BtnIniciar.Click += new System.EventHandler(this.BtnIniciar_Click);
+            // 
+            // BtnDetener
+            // 
+            this.BtnDetener.Name = "BtnDetener";
+            this.BtnDetener.Size = new System.Drawing.Size(171, 32);
+            this.BtnDetener.Text = "&Detener";
+            this.BtnDetener.Click += new System.EventHandler(this.BtnDetener_Click);
+            // 
+            // BtnReset
+            // 
+            this.BtnReset.Name = "BtnReset";
+            this.BtnReset.Size = new System.Drawing.Size(171, 32);
+            this.BtnReset.Text = "&Reiniciar";
+            this.BtnReset.Click += new System.EventHandler(this.BtnReset_Click);
+            // 
+            // BtnSalir
+            // 
+            this.BtnSalir.Name = "BtnSalir";
+            this.BtnSalir.Size = new System.Drawing.Size(171, 32);
+            this.BtnSalir.Text = "&Salir";
+            this.BtnSalir.Click += new System.EventHandler(this.BtnSalir_Click);
+            // 
             // configuracionToolStripMenuItem
             // 
             this.configuracionToolStripMenuItem.Name = "configuracionToolStripMenuItem";
@@ -85,7 +114,8 @@
             this.BtnConnOracle,
             this.BtnConnLocal,
             this.btnConfigGral,
-            this.BtnActualizarCat});
+            this.BtnActualizarCat,
+            this.BtnLanzar});
             this.mantenimientoToolStripMenuItem.Name = "mantenimientoToolStripMenuItem";
             this.mantenimientoToolStripMenuItem.Size = new System.Drawing.Size(160, 32);
             this.mantenimientoToolStripMenuItem.Text = "Mantenimiento";
@@ -148,33 +178,12 @@
             this.LblStatus.Size = new System.Drawing.Size(149, 28);
             this.LblStatus.Text = "DESCONOCIDO";
             // 
-            // BtnIniciar
+            // BtnLanzar
             // 
-            this.BtnIniciar.Name = "BtnIniciar";
-            this.BtnIniciar.Size = new System.Drawing.Size(224, 32);
-            this.BtnIniciar.Text = "&Iniciar";
-            this.BtnIniciar.Click += new System.EventHandler(this.BtnIniciar_Click);
-            // 
-            // BtnDetener
-            // 
-            this.BtnDetener.Name = "BtnDetener";
-            this.BtnDetener.Size = new System.Drawing.Size(224, 32);
-            this.BtnDetener.Text = "&Detener";
-            this.BtnDetener.Click += new System.EventHandler(this.BtnDetener_Click);
-            // 
-            // BtnReset
-            // 
-            this.BtnReset.Name = "BtnReset";
-            this.BtnReset.Size = new System.Drawing.Size(224, 32);
-            this.BtnReset.Text = "&Reiniciar";
-            this.BtnReset.Click += new System.EventHandler(this.BtnReset_Click);
-            // 
-            // BtnSalir
-            // 
-            this.BtnSalir.Name = "BtnSalir";
-            this.BtnSalir.Size = new System.Drawing.Size(224, 32);
-            this.BtnSalir.Text = "&Salir";
-            this.BtnSalir.Click += new System.EventHandler(this.BtnSalir_Click);
+            this.BtnLanzar.Name = "BtnLanzar";
+            this.BtnLanzar.Size = new System.Drawing.Size(284, 32);
+            this.BtnLanzar.Text = "Lanzar";
+            this.BtnLanzar.Click += new System.EventHandler(this.BtnLanzar_Click);
             // 
             // FrmMain
             // 
@@ -217,6 +226,7 @@
         private System.Windows.Forms.ToolStripMenuItem BtnDetener;
         private System.Windows.Forms.ToolStripMenuItem BtnReset;
         private System.Windows.Forms.ToolStripMenuItem BtnSalir;
+        private System.Windows.Forms.ToolStripMenuItem BtnLanzar;
     }
 }
 

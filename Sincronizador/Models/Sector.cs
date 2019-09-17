@@ -14,5 +14,6 @@ namespace Sincronizador.Models
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public bool LanzaHttprequest { get; set; }
+        public bool Urgencias { get; set; }
     }
 }

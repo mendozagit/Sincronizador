@@ -191,6 +191,10 @@ namespace Sincronizador.Models
                     .HasColumnName("DT_ALTA")
                     .HasColumnType("datetime");
 
+                entity.Property(e => e.Fenvio)
+                    .HasColumnName("FEnvio")
+                    .HasColumnType("datetime");
+
                 entity.Property(e => e.HttpResponse)
                     .HasColumnName("httpResponse")
                     .HasMaxLength(50);
@@ -198,6 +202,8 @@ namespace Sincronizador.Models
                 entity.Property(e => e.NrAtendimento)
                     .HasColumnName("NR_ATENDIMENTO")
                     .HasMaxLength(50);
+
+                entity.Property(e => e.Parametros).IsRequired();
             });
 
             modelBuilder.Entity<Medico>(entity =>
