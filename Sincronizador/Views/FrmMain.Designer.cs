@@ -41,10 +41,11 @@
             this.BtnConnLocal = new System.Windows.Forms.ToolStripMenuItem();
             this.btnConfigGral = new System.Windows.Forms.ToolStripMenuItem();
             this.BtnActualizarCat = new System.Windows.Forms.ToolStripMenuItem();
+            this.BtnLanzar = new System.Windows.Forms.ToolStripMenuItem();
             this.LblStatusBar = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.LblStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.BtnLanzar = new System.Windows.Forms.ToolStripMenuItem();
+            this.BtnSectores = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.LblStatusBar.SuspendLayout();
             this.SuspendLayout();
@@ -115,7 +116,8 @@
             this.BtnConnLocal,
             this.btnConfigGral,
             this.BtnActualizarCat,
-            this.BtnLanzar});
+            this.BtnLanzar,
+            this.BtnSectores});
             this.mantenimientoToolStripMenuItem.Name = "mantenimientoToolStripMenuItem";
             this.mantenimientoToolStripMenuItem.Size = new System.Drawing.Size(160, 32);
             this.mantenimientoToolStripMenuItem.Text = "Mantenimiento";
@@ -153,6 +155,13 @@
             this.BtnActualizarCat.Text = "&Actualizar catálogos  ";
             this.BtnActualizarCat.Click += new System.EventHandler(this.BtnActualizarCat_Click);
             // 
+            // BtnLanzar
+            // 
+            this.BtnLanzar.Name = "BtnLanzar";
+            this.BtnLanzar.Size = new System.Drawing.Size(284, 32);
+            this.BtnLanzar.Text = "Lanzar";
+            this.BtnLanzar.Click += new System.EventHandler(this.BtnLanzar_Click);
+            // 
             // LblStatusBar
             // 
             this.LblStatusBar.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -178,12 +187,12 @@
             this.LblStatus.Size = new System.Drawing.Size(149, 28);
             this.LblStatus.Text = "DESCONOCIDO";
             // 
-            // BtnLanzar
+            // BtnSectores
             // 
-            this.BtnLanzar.Name = "BtnLanzar";
-            this.BtnLanzar.Size = new System.Drawing.Size(284, 32);
-            this.BtnLanzar.Text = "Lanzar";
-            this.BtnLanzar.Click += new System.EventHandler(this.BtnLanzar_Click);
+            this.BtnSectores.Name = "BtnSectores";
+            this.BtnSectores.Size = new System.Drawing.Size(284, 32);
+            this.BtnSectores.Text = "Sectores";
+            this.BtnSectores.Click += new System.EventHandler(this.BtnSectores_Click);
             // 
             // FrmMain
             // 
@@ -227,6 +236,7 @@
         private System.Windows.Forms.ToolStripMenuItem BtnReset;
         private System.Windows.Forms.ToolStripMenuItem BtnSalir;
         private System.Windows.Forms.ToolStripMenuItem BtnLanzar;
+        private System.Windows.Forms.ToolStripMenuItem BtnSectores;
     }
 }
 

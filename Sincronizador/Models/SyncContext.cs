@@ -21,6 +21,7 @@ namespace Sincronizador.Models
         public virtual DbSet<Configuracion> Configuracion { get; set; }
         public virtual DbSet<Establecimiento> Establecimiento { get; set; }
         public virtual DbSet<HttpRequest> HttpRequest { get; set; }
+        public virtual DbSet<HttpRequestConfig> HttpRequestConfig { get; set; }
         public virtual DbSet<Medico> Medico { get; set; }
         public virtual DbSet<Paciente> Paciente { get; set; }
         public virtual DbSet<Query> Query { get; set; }
@@ -204,6 +205,15 @@ namespace Sincronizador.Models
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Parametros).IsRequired();
+            });
+
+            modelBuilder.Entity<HttpRequestConfig>(entity =>
+            {
+                entity.Property(e => e.Sucursal)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Url).IsRequired();
             });
 
             modelBuilder.Entity<Medico>(entity =>

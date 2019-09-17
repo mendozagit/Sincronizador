@@ -61,7 +61,14 @@ namespace Sincronizador.Views
 
         private void BtnLanzar_Click(object sender, EventArgs e)
         {
-            SincronizadorController.LanzaPeticiones();
+            
+        }
+
+        private void BtnSectores_Click(object sender, EventArgs e)
+        {
+            var form = new FrmSectores();
+            form.MdiParent = this;
+            form.Show();
         }
     }
 }

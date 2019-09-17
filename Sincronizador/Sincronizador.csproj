@@ -138,6 +138,7 @@
     <Compile Include="Controller\ComplementoController.cs" />
     <Compile Include="Controller\ConfiguracionController.cs" />
     <Compile Include="Controller\EstablecimientoController.cs" />
+    <Compile Include="Controller\HttpRequestConfigController.cs" />
     <Compile Include="Controller\Inicializador.cs" />
     <Compile Include="Controller\MedicoController.cs" />
     <Compile Include="Controller\OracleContext.cs" />
@@ -153,6 +154,7 @@
     <Compile Include="Models\Configuracion.cs" />
     <Compile Include="Models\Establecimiento.cs" />
     <Compile Include="Models\HttpRequest.cs" />
+    <Compile Include="Models\HttpRequestConfig.cs" />
     <Compile Include="Models\Medico.cs" />
     <Compile Include="Models\Paciente.cs" />
     <Compile Include="Models\Parametro.cs" />
@@ -198,6 +200,12 @@
     <Compile Include="Views\FrmQuestion.designer.cs">
       <DependentUpon>FrmQuestion.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\FrmSectores.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\FrmSectores.Designer.cs">
+      <DependentUpon>FrmSectores.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -225,6 +233,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\FrmQuestion.resx">
       <DependentUpon>FrmQuestion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\FrmSectores.resx">
+      <DependentUpon>FrmSectores.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

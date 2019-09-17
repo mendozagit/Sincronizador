@@ -246,8 +246,8 @@ namespace Sincronizador.Controller
                 o.DsSetorAtendimento = row["DS_SETOR_ATENDIMENTO"].ToString();
                 o.NmUnidadeBasica = row["NM_UNIDADE_BASICA"].ToString();
                 o.IeSituacao = row["IE_SITUACAO"].ToString();
-                o.IeSituacao = row["DS_DESCRICAO"].ToString();
-                o.DsDescricao = row["IE_PROPRIO"].ToString();
+                o.DsDescricao = row["DS_DESCRICAO"].ToString();
+                // o.IE = row["IE_PROPRIO"].ToString();
                 o.CreatedAt = DateTime.Now;
                 o.UpdatedAt = null;
                 if (!sectorController.InsertOne(o))
@@ -395,6 +395,7 @@ namespace Sincronizador.Controller
                 SincronizarComplementoMedico(altasRemotas);
                 SincronizarComplementoPaciente(altasRemotas);
                 PreparaHttpRequest(altasRemotas);
+                LanzaHttpRequests();
                 q.UltSincronizacion = DateTime.Now;
                 queryController.Update(q);
 
@@ -402,7 +403,6 @@ namespace Sincronizador.Controller
             else
                 WriteStatus("TODO ESTÁ SINCRONIZADO " + DateTime.Now.ToString("HH:mm:ss"));
         }
-
         private static void SincronizarComplementoMedico(DataTable altasRemotas)
         {
             using (var db = new SyncContext())
@@ -535,13 +535,12 @@ namespace Sincronizador.Controller
             else
                 WriteStatus("TODO ESTÁ SINCRONIZADO " + DateTime.Now.ToString("HH:mm:ss"));
         }
-        public static void LanzaPeticiones()
+        public static void LanzaHttpRequests()
         {
             var requests = requestController.SelectAllPendientes();
             foreach (var r in requests)
                 LanzaHttpRequest(r);
         }
-
         private static void LanzaHttpRequest(HttpRequest request)
         {
             string respuestahtml;
@@ -551,9 +550,9 @@ namespace Sincronizador.Controller
                 CookieContainer tempcookies = new CookieContainer();
                 UTF8Encoding encoding = new UTF8Encoding();
 
-                request.Parametros = "1|596|JUAN ALEJANDRO FLORES VILADROZA|mendoza.git@gmail.com|NULL|Edson Roberto Hernandez Crisanto|mendoza.git@gmail.com|4611478175|2019-09-10|0";
+                //request.Parametros = "1|596|JUAN ALEJANDRO FLORES VILADROZA|mendoza.git@gmail.com|NULL|Edson Roberto Hernandez Crisanto|mendoza.git@gmail.com|4611478175|2019-09-10|0";
                 var byt = Encoding.UTF8.GetBytes(request.Parametros);
-                
+
 
                 var ParametrosBase64 = Convert.ToBase64String(byt);
 
@@ -580,7 +579,7 @@ namespace Sincronizador.Controller
                 string thepage = postreqreader.ReadToEnd();
                 HttpWebResponse respuesta = postresponse;
                 respuestahtml = thepage;
-               // respuestaDesglosada = new[] { "1" };
+                // respuestaDesglosada = new[] { "1" };
             }
             catch (Exception ex)
             {
@@ -666,7 +665,6 @@ namespace Sincronizador.Controller
             }
             else return "";
         }
-
         private static void SincronizaPaciente(DataTable altasRemotas)
         {
             using (var db = new SyncContext())
